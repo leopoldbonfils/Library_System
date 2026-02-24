@@ -2,24 +2,21 @@ from datetime import datetime
 from functools import wraps
 
 
-# Logging Decorator
 def track_access(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print(f"[{datetime.now()}] Method: {func.__name__}")
-        print(f"Arguments: {args[1:]}, {kwargs}")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{timestamp}] '{func.__name__}' called with args: {args[1:]}")
         return func(*args, **kwargs)
     return wrapper
 
 
-# Permission Closure
 def permission_check(required_role):
     def decorator(func):
         @wraps(func)
-        def wrapper(user, *args, **kwargs):
+        def wrapper(self, user, *args, **kwargs):
             if getattr(user, "role", None) == required_role:
-                return func(user, *args, **kwargs)
-            else:
-                print("Access denied. Permission required:", required_role)
+                return func(self, user, *args, **kwargs)
+            print(f"Access denied for '{user.name}'. You need the '{required_role}' role.")
         return wrapper
     return decorator
